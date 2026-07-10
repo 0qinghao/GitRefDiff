@@ -20,8 +20,10 @@ Color-coded left-border markers at a glance:
 | | Color | Meaning |
 |---|-------|---------|
 | :green_circle: | Green | Line was **added** after the reference |
-| :blue_circle: | Blue | Line was **modified** vs the reference |
-| :red_circle: | Red | Line was **deleted** from the reference
+| :yellow_circle: | Yellow | Line was **modified** vs the reference |
+| :red_circle: | Red | Line was **deleted** from the reference |
+
+> Colors match VS Code's built-in diff conventions. All colors are customizable via `gitRefDiff.*Color` settings.
 
 ### 🔍 Hover to Preview Full Hunk Diff
 Hover over any marked line to see the **complete unified diff block** with context lines — just like `git diff` inline in your editor.

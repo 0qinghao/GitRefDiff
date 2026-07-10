@@ -34,7 +34,7 @@ export function createDecorationTypes(): void {
     disposeDecorationTypes();
 
     const addedColor = getConfig('addedColor', '#4CAF50');
-    const modifiedColor = getConfig('modifiedColor', '#2196F3');
+    const modifiedColor = getConfig('modifiedColor', '#E6A817');
     const deletedColor = getConfig('deletedColor', '#F44336');
 
     // Light theme

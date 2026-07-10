@@ -58,17 +58,17 @@
         "gitRefDiff.addedColor": {
           "type": "string",
           "default": "#4CAF50",
-          "description": "Gutter indicator color for added lines (CSS color)"
+          "description": "Gutter indicator color for added lines, green (CSS color)"
         },
         "gitRefDiff.modifiedColor": {
           "type": "string",
-          "default": "#2196F3",
-          "description": "Gutter indicator color for modified lines (CSS color)"
+          "default": "#E6A817",
+          "description": "Gutter indicator color for modified lines, yellow (CSS color)"
         },
         "gitRefDiff.deletedColor": {
           "type": "string",
           "default": "#F44336",
-          "description": "Gutter indicator color for deleted lines (CSS color)"
+          "description": "Gutter indicator color for deleted lines, red (CSS color)"
         }
       }
     }
