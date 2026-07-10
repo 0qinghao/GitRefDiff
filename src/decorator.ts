@@ -14,15 +14,20 @@ function getConfig(key: string, defaultValue: string): string {
     return config.get<string>(key, defaultValue);
 }
 
+function getBorderStyle(): string {
+    return getConfig('borderStyle', 'solid');
+}
+
 function createDecoration(
     borderColor: string,
     overviewRulerColor: string,
     isDeleted: boolean = false
 ): vscode.TextEditorDecorationType {
+    const borderStyle = getBorderStyle();
     return vscode.window.createTextEditorDecorationType({
         isWholeLine: !isDeleted,
         borderWidth: '0 0 0 3px',
-        borderStyle: 'solid',
+        borderStyle: borderStyle as 'solid' | 'dashed' | 'dotted',
         borderColor,
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor,
@@ -36,6 +41,7 @@ export function createDecorationTypes(): void {
     const addedColor = getConfig('addedColor', '#4CAF50');
     const modifiedColor = getConfig('modifiedColor', '#E6A817');
     const deletedColor = getConfig('deletedColor', '#F44336');
+    const borderStyle = getBorderStyle();
 
     // Light theme
     addedDecoration = createDecoration(addedColor, addedColor);
@@ -43,7 +49,7 @@ export function createDecorationTypes(): void {
     deletedDecoration = vscode.window.createTextEditorDecorationType({
         isWholeLine: true,
         borderWidth: '0 0 0 3px',
-        borderStyle: 'solid',
+        borderStyle: borderStyle as 'solid' | 'dashed' | 'dotted',
         borderColor: deletedColor,
         overviewRulerLane: vscode.OverviewRulerLane.Left,
         overviewRulerColor: deletedColor,
