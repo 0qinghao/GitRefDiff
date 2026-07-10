@@ -2,7 +2,7 @@
   "name": "gitrefdiff",
   "displayName": "Git Ref Diff",
   "description": "Compare working tree against any git reference (commit, branch, tag) with inline gutter indicators and hover diff preview. Like GitMarginDiff for VS Code.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "0qinghao",
   "license": "MIT",
   "pricing": "Free",
