@@ -32,10 +32,10 @@ export function activate(context: vscode.ExtensionContext): void {
     // Create decoration types
     createDecorationTypes();
 
-    // Create status bar item
+    // Create status bar item — right alignment, low priority to sit near the bottom-right
     statusBarItem = vscode.window.createStatusBarItem(
-        vscode.StatusBarAlignment.Left,
-        100
+        vscode.StatusBarAlignment.Right,
+        -100
     );
     statusBarItem.command = 'gitRefDiff.pickRef';
     statusBarItem.text = '$(git-compare) Git Ref Diff';

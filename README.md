@@ -4,8 +4,6 @@
 
 A VS Code extension inspired by the Visual Studio extension [Git Diff Margin](https://github.com/laurentkempe/GitDiffMargin). Pin any commit, branch, or tag and see exactly what's changed, right in the gutter.
 
-![gutter indicators](green=added, blue=modified, red=deleted)
-
 ## Features
 
 ### 📌 Arbitrary Reference Comparison
@@ -19,11 +17,9 @@ Compare against **any** git reference — not just the current branch's HEAD:
 ### 🎨 Gutter Indicators
 Color-coded left-border markers at a glance:
 
-| Color | Meaning |
-|-------|---------|
-| 🟢 Green | Line was **added** after the reference |
-| 🔵 Blue | Line was **modified** vs the reference |
-| 🔴 Red | Line was **deleted** from the reference |
+- **🟢 Green** — Line was **added** after the reference
+- **🔵 Blue** — Line was **modified** vs the reference
+- **🔴 Red** — Line was **deleted** from the reference
 
 ### 🔍 Hover to Preview Full Hunk Diff
 Hover over any marked line to see the **complete unified diff block** with context lines — just like `git diff` inline in your editor.
