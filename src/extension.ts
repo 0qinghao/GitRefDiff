@@ -12,6 +12,7 @@ import {
     getCurrentBranch,
     getFileContentAtRef,
     getChangedFiles,
+    validateRef,
 } from './git';
 
 let state: DiffState;
@@ -19,8 +20,12 @@ let statusBarItem: vscode.StatusBarItem;
 let disposables: vscode.Disposable[] = [];
 let hoverDisposable: vscode.Disposable | undefined;
 let debounceTimer: NodeJS.Timeout | undefined;
+let extensionContext: vscode.ExtensionContext;
+
+const SAVED_REF_KEY = 'gitRefDiff.savedRef';
 
 export function activate(context: vscode.ExtensionContext): void {
+    extensionContext = context;
     state = new DiffState();
 
     // Set workspace root
@@ -124,6 +129,9 @@ export function activate(context: vscode.ExtensionContext): void {
         debouncedUpdate(vscode.window.activeTextEditor);
     }
 
+    // Attempt to restore previously saved reference
+    restoreSavedRef(context);
+
     // Cleanup
     context.subscriptions.push({
         dispose: () => {
@@ -132,6 +140,37 @@ export function activate(context: vscode.ExtensionContext): void {
             if (debounceTimer) clearTimeout(debounceTimer);
         }
     });
+}
+
+/**
+ * Restore the saved reference from workspace state on activation.
+ */
+async function restoreSavedRef(context: vscode.ExtensionContext): Promise<void> {
+    const savedRef = context.workspaceState.get<string>(SAVED_REF_KEY);
+    if (!savedRef) return;
+
+    // Validate the ref still exists
+    const valid = await validateRef(savedRef);
+    if (!valid) {
+        context.workspaceState.update(SAVED_REF_KEY, undefined);
+        return;
+    }
+
+    await state.setRef(savedRef);
+    await state.refreshChangedFiles();
+
+    // Update all editors
+    await updateAllEditors(state);
+
+    statusBarItem.text = `$(git-compare) Diff: ${savedRef}`;
+    statusBarItem.tooltip = `Comparing against \`${savedRef}\`. Click to change.`;
+}
+
+/**
+ * Persist the currently selected reference to workspace state.
+ */
+async function persistRef(ref: string | undefined): Promise<void> {
+    await extensionContext.workspaceState.update(SAVED_REF_KEY, ref);
 }
 
 function registerHoverProvider(): void {
@@ -244,6 +283,7 @@ async function pickRef(): Promise<void> {
 
         await state.setRef(ref);
         await state.refreshChangedFiles();
+        await persistRef(ref);
 
         // Update all editors
         await updateAllEditors(state);
@@ -271,6 +311,7 @@ async function pickRef(): Promise<void> {
  */
 async function clearRef(): Promise<void> {
     state.clear();
+    await persistRef(undefined);
     await updateAllEditors(state);
     vscode.window.showInformationMessage('Git Ref Diff: Comparison cleared.');
 }
