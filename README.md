@@ -17,9 +17,11 @@ Compare against **any** git reference — not just the current branch's HEAD:
 ### 🎨 Gutter Indicators
 Color-coded left-border markers at a glance:
 
-- **🟢 Green** — Line was **added** after the reference
-- **🔵 Blue** — Line was **modified** vs the reference
-- **🔴 Red** — Line was **deleted** from the reference
+| | Color | Meaning |
+|---|-------|---------|
+| :green_circle: | Green | Line was **added** after the reference |
+| :blue_circle: | Blue | Line was **modified** vs the reference |
+| :red_circle: | Red | Line was **deleted** from the reference
 
 ### 🔍 Hover to Preview Full Hunk Diff
 Hover over any marked line to see the **complete unified diff block** with context lines — just like `git diff` inline in your editor.
