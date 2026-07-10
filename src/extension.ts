@@ -58,6 +58,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('gitRefDiff.openDiff', openDiff),
         vscode.commands.registerCommand('gitRefDiff.copyOldContent', copyOldContent),
         vscode.commands.registerCommand('gitRefDiff.refresh', refresh),
+        vscode.commands.registerCommand('gitRefDiff.revertHunk', revertHunk),
     );
 
     // Listen for active editor changes
@@ -366,6 +367,79 @@ async function refresh(): Promise<void> {
     await state.refreshChangedFiles();
     await updateAllEditors(state);
     vscode.window.showInformationMessage(`Git Ref Diff: Refreshed comparison against \`${state.ref}\`.`);
+}
+
+/**
+ * Command: Revert the hunk at the given line back to the reference state.
+ */
+async function revertHunk(args: { filePath: string; ref: string; line: number }): Promise<void> {
+    const { filePath, ref, line } = args;
+
+    if (state.ref !== ref) {
+        vscode.window.showWarningMessage(`Current reference is \`${state.ref}\`, but revert targets \`${ref}\`. Refresh first.`);
+        return;
+    }
+
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.uri.fsPath !== filePath) {
+        vscode.window.showInformationMessage('The target file is not the active editor.');
+        return;
+    }
+
+    const hunkInfo = await state.getHunkForLine(filePath, line);
+    if (!hunkInfo) {
+        vscode.window.showInformationMessage('No hunk found at this line.');
+        return;
+    }
+
+    const { hunk } = hunkInfo;
+
+    // Ask for confirmation
+    const confirm = await vscode.window.showWarningMessage(
+        `Revert this ${hunk.type} block (${hunk.type === 'added' ? hunk.newCount : hunk.oldCount} line(s)) to match \`${ref}\`?`,
+        { modal: false },
+        'Revert'
+    );
+    if (confirm !== 'Revert') return;
+
+    const doc = editor.document;
+
+    // --- Prepare the edit ---
+    if (hunk.type === 'added') {
+        // Pure additions → delete the new lines
+        const startLine = hunk.newStart - 1;
+        const endLine = startLine + hunk.newCount;
+        await editor.edit((eb) => {
+            eb.delete(new vscode.Range(startLine, 0, endLine, 0));
+        });
+    } else {
+        // Modified → replace with old content; Deleted → re-insert old lines
+        const oldLines = await state.getOldHunkLines(filePath, hunk);
+        if (!oldLines) {
+            vscode.window.showInformationMessage('Could not retrieve original content from the reference.');
+            return;
+        }
+
+        if (hunk.type === 'modified') {
+            const startLine = hunk.newStart - 1;
+            const endLine = startLine + hunk.newCount;
+            const text = oldLines.join('\n') + '\n';
+            await editor.edit((eb) => {
+                eb.replace(new vscode.Range(startLine, 0, endLine, 0), text);
+            });
+        } else if (hunk.type === 'deleted') {
+            const insertLine = hunk.newStart - 1;
+            const text = oldLines.join('\n') + '\n';
+            await editor.edit((eb) => {
+                eb.insert(new vscode.Position(insertLine, 0), text);
+            });
+        }
+    }
+
+    // Invalidate cache and refresh decorations
+    state.invalidateFile(filePath);
+    await applyDecorations(editor, state);
+    vscode.window.showInformationMessage(`Hunk reverted to match \`${ref}\`. (Undo with Ctrl+Z)`);
 }
 
 export function deactivate(): void {

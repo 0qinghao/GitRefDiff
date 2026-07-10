@@ -135,8 +135,15 @@ export class DiffHoverProvider implements vscode.HoverProvider {
 
         // === Action buttons ===
         markdown.appendMarkdown(`---\n\n`);
+
+        // Side-by-side diff
         markdown.appendMarkdown(
-            `[📂 Open Side-by-Side Diff](command:gitRefDiff.openDiff?${encodeURIComponent(JSON.stringify({ filePath, ref }))})`
+            `[📂 Open Diff](command:gitRefDiff.openDiff?${encodeURIComponent(JSON.stringify({ filePath, ref }))})`
+        );
+
+        // Revert hunk button (always show)
+        markdown.appendMarkdown(
+            ` · [↩️ Revert Block](command:gitRefDiff.revertHunk?${encodeURIComponent(JSON.stringify({ filePath, ref, line: position.line }))})`
         );
 
         return new vscode.Hover(markdown);

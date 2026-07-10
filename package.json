@@ -46,6 +46,10 @@
       {
         "command": "gitRefDiff.refresh",
         "title": "Git Ref Diff: Refresh diff decorations"
+      },
+      {
+        "command": "gitRefDiff.revertHunk",
+        "title": "Git Ref Diff: Revert hunk block to reference state"
       }
     ],
     "configuration": {

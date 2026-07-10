@@ -260,6 +260,23 @@ export class DiffState {
     }
 
     /**
+     * Get the old content lines for a specific hunk range.
+     * Returns lines from the old file that correspond to the hunk's old range.
+     */
+    async getOldHunkLines(filePath: string, hunk: DiffHunk): Promise<string[] | undefined> {
+        if (hunk.type === 'added') return undefined;
+        const oldContent = await this.getOldContent(filePath);
+        if (!oldContent) return undefined;
+
+        const lines = oldContent.split('\n');
+        const start = Math.max(0, hunk.oldStart - 1);
+        const end = Math.min(lines.length, hunk.oldStart - 1 + hunk.oldCount);
+        if (start >= end) return [];
+
+        return lines.slice(start, end);
+    }
+
+    /**
      * Invalidate cached diffs for a file (called when file changes).
      */
     invalidateFile(filePath: string): void {
