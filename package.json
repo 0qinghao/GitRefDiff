@@ -1,0 +1,83 @@
+{
+  "name": "gitrefdiff",
+  "displayName": "Git Ref Diff",
+  "description": "Compare working tree against any git reference (commit, branch, tag) with inline gutter indicators and hover diff preview. Like GitMarginDiff for VS Code.",
+  "version": "0.1.0",
+  "publisher": "gitrefdiff",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "diff",
+    "margin",
+    "gutter",
+    "compare",
+    "commit",
+    "review"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitRefDiff.pickRef",
+        "title": "Git Ref Diff: Select reference to compare against"
+      },
+      {
+        "command": "gitRefDiff.clearRef",
+        "title": "Git Ref Diff: Clear comparison"
+      },
+      {
+        "command": "gitRefDiff.openDiff",
+        "title": "Git Ref Diff: Open side-by-side diff for current file"
+      },
+      {
+        "command": "gitRefDiff.copyOldContent",
+        "title": "Git Ref Diff: Copy old line content to clipboard"
+      },
+      {
+        "command": "gitRefDiff.refresh",
+        "title": "Git Ref Diff: Refresh diff decorations"
+      }
+    ],
+    "configuration": {
+      "title": "Git Ref Diff",
+      "properties": {
+        "gitRefDiff.addedColor": {
+          "type": "string",
+          "default": "#4CAF50",
+          "description": "Gutter indicator color for added lines (CSS color)"
+        },
+        "gitRefDiff.modifiedColor": {
+          "type": "string",
+          "default": "#2196F3",
+          "description": "Gutter indicator color for modified lines (CSS color)"
+        },
+        "gitRefDiff.deletedColor": {
+          "type": "string",
+          "default": "#F44336",
+          "description": "Gutter indicator color for deleted lines (CSS color)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
