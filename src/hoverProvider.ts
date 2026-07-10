@@ -30,15 +30,21 @@ export class DiffHoverProvider implements vscode.HoverProvider {
         markdown.isTrusted = true;
         markdown.supportHtml = true;
 
-        // Header
+        // === Buttons (always on top) ===
         const typeLabel = hunk.type === 'added' ? 'Added' : hunk.type === 'deleted' ? 'Deleted' : 'Modified';
         const lineRangeStr = hunk.type === 'deleted'
             ? `Line ${hunk.newStart}`
             : `Lines ${hunk.newStart}–${hunk.newStart + hunk.newCount - 1}`;
-        markdown.appendMarkdown(`**${typeLabel}** — ${lineRangeStr} vs \`${ref}\`\n\n`);
-        markdown.appendMarkdown(`---\n\n`);
+        markdown.appendMarkdown(`**${typeLabel}** — ${lineRangeStr} vs \`${ref}\`  \n`);
+        markdown.appendMarkdown(
+            `[📂 Open Diff](command:gitRefDiff.openDiff?${encodeURIComponent(JSON.stringify({ filePath, ref }))})`
+        );
+        markdown.appendMarkdown(
+            ` · [↩️ Revert](command:gitRefDiff.revertHunk?${encodeURIComponent(JSON.stringify({ filePath, ref, line: position.line }))})`
+        );
+        markdown.appendMarkdown(`\n\n---\n\n`);
 
-        // Only show the actual changed lines — no context at all
+        // === Diff content below ===
         if (hunk.type === 'added') {
             markdown.appendMarkdown('```diff\n');
             for (let i = 0; i < newLines.length; i++) {
@@ -71,7 +77,6 @@ export class DiffHoverProvider implements vscode.HoverProvider {
                     markdown.appendMarkdown(`- ${oldLines[i]}\n`);
                 }
             }
-            // Visual separator between old and new
             markdown.appendMarkdown('```\n\n```diff\n');
             for (let i = 0; i < newLines.length; i++) {
                 const lineNum = newStart + i;
@@ -81,15 +86,6 @@ export class DiffHoverProvider implements vscode.HoverProvider {
             }
             markdown.appendMarkdown('```\n');
         }
-
-        // Action buttons
-        markdown.appendMarkdown(`---\n\n`);
-        markdown.appendMarkdown(
-            `[📂 Open Diff](command:gitRefDiff.openDiff?${encodeURIComponent(JSON.stringify({ filePath, ref }))})`
-        );
-        markdown.appendMarkdown(
-            ` · [↩️ Revert Block](command:gitRefDiff.revertHunk?${encodeURIComponent(JSON.stringify({ filePath, ref, line: position.line }))})`
-        );
 
         return new vscode.Hover(markdown);
     }
