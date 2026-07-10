@@ -2,7 +2,7 @@
   "name": "gitrefdiff",
   "displayName": "Git Ref Diff",
   "description": "Compare working tree against any git reference (commit, branch, tag) with inline gutter indicators and hover diff preview. Like GitMarginDiff for VS Code.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "0qinghao",
   "license": "MIT",
   "pricing": "Free",
@@ -92,6 +92,13 @@
           "default": "solid",
           "enum": ["solid", "dashed", "dotted"],
           "description": "Left border style for gutter indicators"
+        },
+        "gitRefDiff.borderWidth": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Left border width in pixels. Larger values also increase dash gap for 'dashed' style"
         }
       }
     }

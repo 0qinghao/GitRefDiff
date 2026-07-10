@@ -18,15 +18,21 @@ function getBorderStyle(): string {
     return getConfig('borderStyle', 'solid');
 }
 
+function getBorderWidth(): string {
+    const config = vscode.workspace.getConfiguration('gitRefDiff');
+    return `0 0 0 ${config.get<number>('borderWidth', 3)}px`;
+}
+
 function createDecoration(
     borderColor: string,
     overviewRulerColor: string,
     isDeleted: boolean = false
 ): vscode.TextEditorDecorationType {
     const borderStyle = getBorderStyle();
+    const borderWidth = getBorderWidth();
     return vscode.window.createTextEditorDecorationType({
         isWholeLine: !isDeleted,
-        borderWidth: '0 0 0 3px',
+        borderWidth,
         borderStyle: borderStyle as 'solid' | 'dashed' | 'dotted',
         borderColor,
         overviewRulerLane: vscode.OverviewRulerLane.Left,
@@ -42,13 +48,14 @@ export function createDecorationTypes(): void {
     const modifiedColor = getConfig('modifiedColor', '#E6A817');
     const deletedColor = getConfig('deletedColor', '#F44336');
     const borderStyle = getBorderStyle();
+    const borderWidth = getBorderWidth();
 
     // Light theme
     addedDecoration = createDecoration(addedColor, addedColor);
     modifiedDecoration = createDecoration(modifiedColor, modifiedColor);
     deletedDecoration = vscode.window.createTextEditorDecorationType({
         isWholeLine: true,
-        borderWidth: '0 0 0 3px',
+        borderWidth,
         borderStyle: borderStyle as 'solid' | 'dashed' | 'dotted',
         borderColor: deletedColor,
         overviewRulerLane: vscode.OverviewRulerLane.Left,
