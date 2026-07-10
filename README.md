@@ -17,11 +17,11 @@ Compare against **any** git reference — not just the current branch's HEAD:
 ### 🎨 Gutter Indicators
 Color-coded left-border markers at a glance:
 
-| | Color | Meaning |
-|---|-------|---------|
-| :green_circle: | Green | Line was **added** after the reference |
-| :yellow_circle: | Yellow | Line was **modified** vs the reference |
-| :red_circle: | Red | Line was **deleted** from the reference |
+| Color | Meaning |
+|-------|---------|
+| Green | Line was **added** after the reference |
+| Yellow | Line was **modified** vs the reference |
+| Red | Line was **deleted** from the reference |
 
 > Colors match VS Code's built-in diff conventions. All colors are customizable via `gitRefDiff.*Color` settings.
 
