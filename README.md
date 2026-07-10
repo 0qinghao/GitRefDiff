@@ -1,107 +1,163 @@
-# Git Ref Diff
+<h1 align="center">
+  Git Ref Diff
+</h1>
 
-> **Compare your working tree against any git reference — in the editor gutter.**
+<p align="center">
+  <b>Compare your working tree against any git reference — right in the editor gutter.</b>
+</p>
 
-A VS Code extension inspired by the Visual Studio extension [Git Diff Margin](https://github.com/laurentkempe/GitDiffMargin). Pin any commit, branch, or tag and see exactly what's changed, right in the gutter.
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=0qinghao.gitrefdiff" target="_blank">
+    <img src="https://img.shields.io/badge/Visual%20Studio%20Marketplace-v0.1.0-4CAF50?style=flat-square&logo=visual-studio-code" alt="Marketplace">
+  </a>
+  <a href="https://github.com/0qinghao/GitRefDiff" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-0qinghao/GitRefDiff-181717?style=flat-square&logo=github" alt="GitHub">
+  </a>
+  <a href="https://github.com/0qinghao/GitRefDiff/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License">
+  </a>
+  <img src="https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?style=flat-square" alt="VS Code">
+</p>
 
-## Features
+<br>
 
-### 📌 Arbitrary Reference Comparison
-Compare against **any** git reference — not just the current branch's HEAD:
-- Branch names (`main`, `feature/login`)
-- Commit SHAs (`a1b2c3d`, full or short)
-- Relative references (`HEAD~5`, `main~3`)
-- Tags (`v1.0.0`)
-- Remote branches (`origin/develop`)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/0qinghao/GitRefDiff/main/images/gutter-indicators.png" alt="Git Ref Diff gutter indicators" width="720">
+</p>
 
-### 🎨 Gutter Indicators
-Color-coded left-border markers at a glance:
+---
+
+Inspired by the Visual Studio extension [Git Diff Margin](https://github.com/laurentkempe/GitDiffMargin), **Git Ref Diff** brings the same intuitive diff-at-a-glance experience to VS Code — with the superpower of comparing against **any** git reference, not just HEAD.
+
+---
+
+## ✨ Features
+
+### 📌 Compare Against Any Reference
+
+Unlike VS Code's built-in gutter diff (which only compares against HEAD), Git Ref Diff lets you pin **any** git reference:
+
+| Reference Type | Examples |
+|---------------|----------|
+| Branch | `main`, `develop`, `feature/login` |
+| Commit SHA | `a1b2c3d`, `e5f6g7h` |
+| Relative | `HEAD~3`, `main~5` |
+| Tag | `v1.0.0`, `v2.3.1` |
+| Remote | `origin/main`, `upstream/develop` |
+
+### 🎨 Visual Gutter Indicators
+
+Color-coded left-border markers give you instant feedback:
 
 | Color | Meaning |
 |-------|---------|
-| Green | Line was **added** after the reference |
-| Yellow | Line was **modified** vs the reference |
-| Red | Line was **deleted** from the reference |
+| 🟢 Green | Line was **added** after the reference |
+| 🟡 Yellow | Line was **modified** vs the reference |
+| 🔴 Red | Line was **deleted** from the reference |
 
-> Colors match VS Code's built-in diff conventions. All colors are customizable via `gitRefDiff.*Color` settings.
+### 🔍 Hover to Preview Diff
 
-### 🔍 Hover to Preview Full Hunk Diff
-Hover over any marked line to see the **complete unified diff block** with context lines — just like `git diff` inline in your editor.
+Hover over any marked line to see only the changed code — no extra context:
 
 ```diff
-  // context before
-  int a = 1;
-- int old = compute(a);
-+ int new = compute(a, b);
-  int c = a + b;
-  // context after
+- return oldCompute(a);
++ return newCompute(a, b);
 ```
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/0qinghao/GitRefDiff/main/images/hover-preview.png" alt="Hover preview" width="600">
+</p>
+
+### ↩️ Revert Block — One Click Undo
+
+Every hover popup includes a **Revert Block** button that restores the hunk to match the selected reference:
+
+| Scenario | Behavior |
+|----------|----------|
+| Added lines | Deletes the new lines |
+| Modified lines | Replaces with original content |
+| Deleted lines | Re-inserts the removed lines |
+
+> Undo is always available with `Ctrl+Z`!
+
 ### 📂 One-Click Side-by-Side Diff
-Click the **Open Side-by-Side Diff** button in the hover popup to open VS Code's full diff view.
 
-### 📋 Copy Original Content
-For modified/deleted lines, hover and click **Copy Original** to copy the old version to clipboard.
+Open VS Code's native diff view with a single click from the hover popup.
 
-### ⚡ Real-Time Updates
-Gutter indicators update automatically when you:
-- Switch between files
-- Edit and save the current file
-- Switch git references
+### ⚡ Persisted Across Sessions
+
+Your selected reference is saved per-workspace — close and reopen VS Code and your comparison is still there.
 
 ### 📜 Scrollbar Overview Ruler
-Colored markers on the scrollbar show where changes are located across the entire file.
 
-## Usage
+Colored markers on the scrollbar show the distribution of changes across the entire file.
 
-1. Click the **`$(git-compare) Git Ref Diff`** button in the bottom status bar
-2. Choose from the list of branches, remote branches, tags — or select **Enter commit SHA or reference...** to input anything
-3. Gutter indicators appear immediately on all open files
-4. **Hover** over any marked line to see the full diff
-5. Click **Open Side-by-Side Diff** in the hover popup for VS Code's native diff view
+---
 
-To stop comparing, click the status bar item again and select **Clear** (via `Git Ref Diff: Clear comparison` command).
+## 🚀 Quick Start
 
-## Commands
+1. **Install** the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=0qinghao.gitrefdiff)
+2. Click the **`$(git-compare) Git Ref Diff`** button in the bottom-right status bar
+3. Select a branch, tag, or enter a custom reference (e.g. `HEAD~3` or a commit SHA)
+4. 🎉 Gutter indicators appear immediately on all open files
+
+---
+
+## ⌨️ Commands
 
 | Command | Description |
 |---------|-------------|
 | `Git Ref Diff: Select reference to compare against` | Pick a branch, tag, or enter a custom reference |
-| `Git Ref Diff: Clear comparison` | Remove all indicators |
+| `Git Ref Diff: Clear comparison` | Remove all indicators and reset |
 | `Git Ref Diff: Open side-by-side diff for current file` | Open VS Code diff panel |
 | `Git Ref Diff: Copy old line content to clipboard` | Copy original from the reference |
 | `Git Ref Diff: Refresh diff decorations` | Re-fetch and redraw all indicators |
+| `Git Ref Diff: Revert hunk block to reference state` | Revert current hunk (also available from hover) |
 
-## Settings
+---
+
+## ⚙️ Settings
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `gitRefDiff.addedColor` | `#4CAF50` | Gutter color for added lines |
-| `gitRefDiff.modifiedColor` | `#2196F3` | Gutter color for modified lines |
+| `gitRefDiff.addedColor` | `#4CAF50` | Gutte color for added lines |
+| `gitRefDiff.modifiedColor` | `#E6A817` | Gutter color for modified lines |
 | `gitRefDiff.deletedColor` | `#F44336` | Gutter color for deleted lines |
 
-## Requirements
+---
+
+## 🎯 Why This Extension?
+
+| | Built-in VS Code Gutter | Git Ref Diff |
+|---|------------------------|--------------|
+| Compare against | HEAD only | **Any** reference |
+| Arbitrary commit | ❌ | ✅ `a1b2c3d` |
+| Relative refs | ❌ | ✅ `HEAD~5` |
+| Tags | ❌ | ✅ `v1.0.0` |
+| Hover diff preview | ❌ | ✅ Shows old vs new |
+| Revert block | ❌ | ✅ One-click |
+| Persistence | ❌ | ✅ Survives reload |
+
+### Perfect for:
+
+- **Code reviews** — Pin the base branch, see exactly what your feature branch changed
+- **Refactoring** — Keep track of modifications against the original starting point
+- **Bug investigation** — Compare current state with a known-good commit
+- **Release preparation** — Review all changes since the last release tag
+
+---
+
+## 📋 Requirements
 
 - VS Code 1.85+
-- Git installed and available on `PATH`
+- Git installed and accessible via `PATH`
 
-## Why This Extension?
+## 📄 License
 
-The Visual Studio plugin **Git Diff Margin** provides an incredibly smooth workflow: it shows git changes in the editor margin, and clicking on a change reveals the diff inline. For years, VS Code lacked a direct equivalent — the built-in gutter only compares against `HEAD`, and existing alternatives either didn't support arbitrary references or couldn't show diff content on hover.
+[MIT](https://github.com/0qinghao/GitRefDiff/blob/main/LICENSE)
 
-**Git Ref Diff** fills this gap. It's designed for:
-- **Code reviews**: Pin the base branch and see exactly what your feature branch changed
-- **Refactoring**: Keep track of modifications against the original starting point
-- **Bug investigation**: Compare current state with a known-good commit
-- **Release preparation**: Review all changes since the last release tag
+---
 
-## Limitations
-
-- Binary files are not highlighted (git limitation)
-- Large repositories may experience slight delays when switching references
-- Only the first workspace folder is used in multi-root workspaces
-- Gutter indicators for deletions show on the line where the deletion occurred (no visual space is consumed for removed lines)
-
-## License
-
-MIT
+<p align="center">
+  <sub>If you find this extension useful, consider ⭐ starring it on <a href="https://github.com/0qinghao/GitRefDiff">GitHub</a>!</sub>
+</p>

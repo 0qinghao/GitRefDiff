@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "publisher": "0qinghao",
   "license": "MIT",
+  "pricing": "Free",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/0qinghao/GitRefDiff.git"
@@ -23,7 +28,14 @@
     "gutter",
     "compare",
     "commit",
-    "review"
+    "review",
+    "git-diff",
+    "gutter-diff",
+    "diff-margin",
+    "code-review",
+    "inline-diff",
+    "snippet",
+    "visual-studio"
   ],
   "activationEvents": [
     "onStartupFinished"
