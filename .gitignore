@@ -3,3 +3,6 @@ out/
 vsix_build/
 *.vsix
 *.map
+
+# Generated image sources
+A_VS_Code_extension_icon_for_a_*.png
