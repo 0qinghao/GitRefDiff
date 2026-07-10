@@ -189,14 +189,14 @@ export class DiffState {
 
     /**
      * Get the hunk that contains a specific line in the current (new) file.
-     * Returns the hunk and the old content range lines.
+     * Returns only the changed lines — no context.
      */
     async getHunkForLine(filePath: string, newLine: number): Promise<{
         hunk: DiffHunk;
         oldLines: string[];
         newLines: string[];
-        oldStart: number;   // 1-based start in old file for context
-        newStart: number;   // 1-based start in new file for context
+        oldStart: number;   // 1-based start in old file
+        newStart: number;   // 1-based start in new file
     } | undefined> {
         const hunks = await this.getHunks(filePath);
         if (!hunks || hunks.length === 0) return undefined;
@@ -205,8 +205,6 @@ export class DiffState {
         const newLine1Based = newLine + 1;
         const hunk = hunks.find(h => {
             if (h.newCount === 0) {
-                // Pure deletions: decoration placed at h.newStart - 1 (0-based)
-                // The decorated line's 1-based number = h.newStart
                 return newLine1Based === h.newStart;
             }
             const start = h.newStart;
@@ -215,36 +213,26 @@ export class DiffState {
         });
         if (!hunk) return undefined;
 
-        // Get old file content
+        // Get old file content — only the hunk lines
         const oldContent = await this.getOldContent(filePath);
         if (!oldContent) return undefined;
         const oldContentLines = oldContent.split('\n');
 
-        // Get old lines for the hunk with 3 lines of context
         const oldLines: string[] = [];
-        const ctxBeforeOld = 3;
-        const startOld = Math.max(0, hunk.oldStart - 1 - ctxBeforeOld);
-        const endOld = Math.min(oldContentLines.length, hunk.oldStart - 1 + hunk.oldCount + ctxBeforeOld);
-        for (let i = startOld; i < endOld; i++) {
-            oldLines.push(oldContentLines[i]);
+        if (hunk.oldCount > 0) {
+            const startOld = Math.max(0, hunk.oldStart - 1);
+            const endOld = Math.min(oldContentLines.length, hunk.oldStart - 1 + hunk.oldCount);
+            for (let i = startOld; i < endOld; i++) {
+                oldLines.push(oldContentLines[i]);
+            }
         }
 
-        // Get new lines from the current document
+        // Get new lines from the current document — only the hunk lines
         const doc = vscode.window.activeTextEditor?.document;
         const newLines: string[] = [];
-        if (doc && doc.uri.fsPath === filePath) {
-            const ctxBeforeNew = 3;
-            const lineCount = doc.lineCount;
-            let startNew: number;
-            let endNew: number;
-            if (hunk.newCount === 0) {
-                // Deleted: show context around the deletion point
-                startNew = Math.max(0, hunk.newStart - 1 - ctxBeforeNew);
-                endNew = Math.min(lineCount, hunk.newStart - 1 + ctxBeforeNew);
-            } else {
-                startNew = Math.max(0, hunk.newStart - 1 - ctxBeforeNew);
-                endNew = Math.min(lineCount, hunk.newStart - 1 + hunk.newCount + ctxBeforeNew);
-            }
+        if (doc && doc.uri.fsPath === filePath && hunk.newCount > 0) {
+            const startNew = Math.max(0, hunk.newStart - 1);
+            const endNew = Math.min(doc.lineCount, hunk.newStart - 1 + hunk.newCount);
             for (let i = startNew; i < endNew; i++) {
                 newLines.push(doc.lineAt(i).text);
             }
@@ -254,8 +242,8 @@ export class DiffState {
             hunk,
             oldLines,
             newLines,
-            oldStart: Math.max(1, hunk.oldStart - ctxBeforeOld),
-            newStart: Math.max(1, hunk.newStart - 3),
+            oldStart: hunk.oldStart,
+            newStart: hunk.newStart,
         };
     }
 

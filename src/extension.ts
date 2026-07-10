@@ -394,16 +394,6 @@ async function revertHunk(args: { filePath: string; ref: string; line: number })
 
     const { hunk } = hunkInfo;
 
-    // Ask for confirmation
-    const confirm = await vscode.window.showWarningMessage(
-        `Revert this ${hunk.type} block (${hunk.type === 'added' ? hunk.newCount : hunk.oldCount} line(s)) to match \`${ref}\`?`,
-        { modal: false },
-        'Revert'
-    );
-    if (confirm !== 'Revert') return;
-
-    const doc = editor.document;
-
     // --- Prepare the edit ---
     if (hunk.type === 'added') {
         // Pure additions → delete the new lines
