@@ -1,7 +1,7 @@
 {
   "name": "gitrefdiff-ext",
-  "displayName": "Git Ref Diff",
-  "description": "Compare working tree against any git reference (commit, branch, tag) with inline gutter indicators and hover diff preview. Like GitMarginDiff for VS Code.",
+  "displayName": "Git Ref Compare",
+  "description": "Compare working tree against any git reference (commit, branch, tag) with inline gutter indicators and hover diff preview.",
   "version": "0.7.0",
   "publisher": "0qinghao",
   "license": "MIT",
