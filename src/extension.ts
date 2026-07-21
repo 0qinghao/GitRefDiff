@@ -231,12 +231,11 @@ function updateHoverStatusBar(): void {
     if (DiffHoverProvider.enabled) {
         hoverStatusItem.text = '$(eye) Hover: ON';
         hoverStatusItem.tooltip = 'Diff hover preview is enabled. Click to disable during debugging.';
-        hoverStatusItem.backgroundColor = undefined;
     } else {
         hoverStatusItem.text = '$(eye-closed) Hover: OFF';
-        hoverStatusItem.tooltip = 'Diff hover preview is disabled (native hover works). Click to re-enable.';
-        hoverStatusItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+        hoverStatusItem.tooltip = 'Diff hover preview is disabled (native hover restored). Click to re-enable.';
     }
+    hoverStatusItem.backgroundColor = undefined;
 }
 
 function toggleHover(): void {
