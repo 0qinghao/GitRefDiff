@@ -24,6 +24,7 @@ let debounceTimer: NodeJS.Timeout | undefined;
 let extensionContext: vscode.ExtensionContext;
 
 const SAVED_REF_KEY = 'gitRefDiff.savedRef';
+const SAVED_HOVER_KEY = 'gitRefDiff.hoverEnabled';
 
 export function activate(context: vscode.ExtensionContext): void {
     extensionContext = context;
@@ -144,6 +145,9 @@ export function activate(context: vscode.ExtensionContext): void {
     // Attempt to restore previously saved reference
     restoreSavedRef(context);
 
+    // Restore hover toggle state
+    restoreHoverState(context);
+
     // Cleanup
     context.subscriptions.push({
         dispose: () => {
@@ -185,6 +189,24 @@ async function persistRef(ref: string | undefined): Promise<void> {
     await extensionContext.workspaceState.update(SAVED_REF_KEY, ref);
 }
 
+/**
+ * Restore the hover toggle state on activation.
+ */
+function restoreHoverState(context: vscode.ExtensionContext): void {
+    const saved = context.globalState.get<boolean>(SAVED_HOVER_KEY);
+    if (saved !== undefined) {
+        DiffHoverProvider.enabled = saved;
+        updateHoverStatusBar();
+    }
+}
+
+/**
+ * Persist the hover toggle state.
+ */
+async function persistHoverState(enabled: boolean): Promise<void> {
+    await extensionContext.globalState.update(SAVED_HOVER_KEY, enabled);
+}
+
 function registerHoverProvider(): void {
     hoverDisposable?.dispose();
     hoverDisposable = vscode.languages.registerHoverProvider(
@@ -220,6 +242,7 @@ function updateHoverStatusBar(): void {
 function toggleHover(): void {
     DiffHoverProvider.enabled = !DiffHoverProvider.enabled;
     updateHoverStatusBar();
+    persistHoverState(DiffHoverProvider.enabled);
     const msg = DiffHoverProvider.enabled
         ? 'Git Ref Diff: Hover preview enabled'
         : 'Git Ref Diff: Hover preview disabled (native hover restored)';
@@ -249,6 +272,15 @@ async function pickRef(): Promise<void> {
         ]);
 
         const items: vscode.QuickPickItem[] = [];
+
+        // Option: clear current comparison
+        if (state.ref) {
+            items.push({
+                label: '$(circle-slash) Clear comparison',
+                description: 'Stop comparing and remove gutter indicators',
+                alwaysShow: true,
+            });
+        }
 
         // Option: enter custom reference
         items.push({
@@ -293,6 +325,12 @@ async function pickRef(): Promise<void> {
         });
 
         if (!picked) return;
+
+        // Handle clear
+        if (picked.label.startsWith('$(circle-slash)')) {
+            await clearRef();
+            return;
+        }
 
         let ref: string;
 
