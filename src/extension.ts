@@ -17,6 +17,7 @@ import {
 
 let state: DiffState;
 let statusBarItem: vscode.StatusBarItem;
+let hoverStatusItem: vscode.StatusBarItem;
 let disposables: vscode.Disposable[] = [];
 let hoverDisposable: vscode.Disposable | undefined;
 let debounceTimer: NodeJS.Timeout | undefined;
@@ -53,6 +54,16 @@ export function activate(context: vscode.ExtensionContext): void {
         updateStatusBar();
     });
 
+    // Create hover toggle status bar item
+    hoverStatusItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Right,
+        -99
+    );
+    hoverStatusItem.command = 'gitRefDiff.toggleHover';
+    updateHoverStatusBar();
+    hoverStatusItem.show();
+    context.subscriptions.push(hoverStatusItem);
+
     // Register hover provider
     registerHoverProvider();
 
@@ -64,6 +75,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('gitRefDiff.copyOldContent', copyOldContent),
         vscode.commands.registerCommand('gitRefDiff.refresh', refresh),
         vscode.commands.registerCommand('gitRefDiff.revertHunk', revertHunk),
+        vscode.commands.registerCommand('gitRefDiff.toggleHover', toggleHover),
     );
 
     // Listen for active editor changes
@@ -191,6 +203,27 @@ function updateStatusBar(): void {
         statusBarItem.tooltip = 'Click to select a reference to compare against';
         statusBarItem.backgroundColor = undefined;
     }
+}
+
+function updateHoverStatusBar(): void {
+    if (DiffHoverProvider.enabled) {
+        hoverStatusItem.text = '$(eye) Hover: ON';
+        hoverStatusItem.tooltip = 'Diff hover preview is enabled. Click to disable during debugging.';
+        hoverStatusItem.backgroundColor = undefined;
+    } else {
+        hoverStatusItem.text = '$(eye-closed) Hover: OFF';
+        hoverStatusItem.tooltip = 'Diff hover preview is disabled (native hover works). Click to re-enable.';
+        hoverStatusItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+    }
+}
+
+function toggleHover(): void {
+    DiffHoverProvider.enabled = !DiffHoverProvider.enabled;
+    updateHoverStatusBar();
+    const msg = DiffHoverProvider.enabled
+        ? 'Git Ref Diff: Hover preview enabled'
+        : 'Git Ref Diff: Hover preview disabled (native hover restored)';
+    vscode.window.showInformationMessage(msg);
 }
 
 function debouncedUpdate(editor: vscode.TextEditor): void {

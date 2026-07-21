@@ -6,6 +6,7 @@ import { DiffState } from './state';
  */
 export class DiffHoverProvider implements vscode.HoverProvider {
     private state: DiffState;
+    static enabled: boolean = true;
 
     constructor(state: DiffState) {
         this.state = state;
@@ -18,6 +19,7 @@ export class DiffHoverProvider implements vscode.HoverProvider {
     ): Promise<vscode.Hover | null> {
         const ref = this.state.ref;
         if (!ref || !this.state.refValidated) return null;
+        if (!DiffHoverProvider.enabled) return null;
 
         const filePath = document.uri.fsPath;
 
